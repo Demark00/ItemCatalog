@@ -4,12 +4,18 @@ import { connectToDB } from "@/lib/db";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await connectToDB();
 
-    const item = await Item.findById(params.id).populate("createdBy", "name email");
+    // Access params directly and ensure it's resolved.
+    // In some edge cases or specific Next.js versions/configurations,
+    // explicitly accessing context before destructuring might help.
+    const resolvedContext = await Promise.resolve(context); // This is a bit of a "no-op" but can sometimes shake loose timing issues
+    const { id } = await context.params;
+
+    const item = await Item.findById(id).populate("createdBy", "name email");
 
     if (!item) {
       return NextResponse.json({ message: "Item not found" }, { status: 404 });
@@ -18,6 +24,9 @@ export async function GET(
     return NextResponse.json({ item }, { status: 200 });
   } catch (error) {
     console.error("Error in GET /api/items/[id]:", error);
-    return NextResponse.json({ message: "Failed to fetch item" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to fetch item" },
+      { status: 500 }
+    );
   }
 }

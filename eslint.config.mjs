@@ -1,3 +1,7 @@
+import parser from "@typescript-eslint/parser";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+
+/** @type {import("eslint").Linter.FlatConfig[]} */
 export default [
   {
     ignores: ["**/node_modules/**", ".next", "**/.next/**"],
@@ -5,20 +9,20 @@ export default [
   {
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
-      parser: require("@typescript-eslint/parser"),
+      parser: parser,
       parserOptions: {
         project: "./tsconfig.json",
       },
     },
     plugins: {
-      "@typescript-eslint": require("@typescript-eslint/eslint-plugin"),
+      "@typescript-eslint": tsPlugin,
     },
     rules: {
       "@typescript-eslint/no-unused-vars": [
-        "warn", // or "off" to disable entirely
+        "warn",
         {
-          argsIgnorePattern: "^_", // allow unused function args prefixed with _
-          varsIgnorePattern: "^_", // allow unused vars prefixed with _
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
     },
