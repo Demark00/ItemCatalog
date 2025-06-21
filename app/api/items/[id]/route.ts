@@ -12,7 +12,8 @@ export async function GET(
     // Access params directly and ensure it's resolved.
     // In some edge cases or specific Next.js versions/configurations,
     // explicitly accessing context before destructuring might help.
-    const resolvedContext = await Promise.resolve(context); // This is a bit of a "no-op" but can sometimes shake loose timing issues
+    // const resolvedContext = await Promise.resolve(context); // This is a bit of a "no-op" but can sometimes shake loose timing issues
+
     const { id } = await context.params;
 
     const item = await Item.findById(id).populate("createdBy", "name email");
