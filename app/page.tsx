@@ -1,8 +1,10 @@
 "use client";
+
 import { useState, ChangeEvent, FormEvent } from "react";
 import { toast } from "react-hot-toast";
 import { ImagePlus, UploadCloud, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useItemStore } from "@/stores/itemsStore";
 import { ITEM_TYPES } from "./constants/items";
 import { resizeImage } from "./utils/resizeImage";
@@ -43,7 +45,7 @@ export default function AddItemPage() {
       const images: string[] = [];
       const previews: string[] = [];
 
-      Array.from(files).forEach(async (file, index) => {
+      Array.from(files).forEach(async (file) => {
         const base64 = await resizeImage(file);
         images.push(base64);
         previews.push(base64);
@@ -156,11 +158,14 @@ export default function AddItemPage() {
                   required
                 />
                 {coverPreview && (
-                  <div className="mt-3">
-                    <img
+                  <div className="mt-3 flex justify-center">
+                    <Image
                       src={coverPreview}
                       alt="Cover Preview"
-                      className="rounded-xl border-2 border-primary/30 shadow-md w-40 h-40 object-cover mx-auto"
+                      width={160}
+                      height={160}
+                      className="rounded-xl border-2 border-primary/30 shadow-md object-cover"
+                      unoptimized
                     />
                   </div>
                 )}
@@ -180,11 +185,14 @@ export default function AddItemPage() {
                 {additionalPreviews.length > 0 && (
                   <div className="flex gap-3 mt-3 flex-wrap">
                     {additionalPreviews.map((img, idx) => (
-                      <img
+                      <Image
                         key={idx}
                         src={img}
                         alt={`Preview ${idx + 1}`}
-                        className="rounded-lg border border-accent/30 w-20 h-20 object-cover shadow"
+                        width={80}
+                        height={80}
+                        className="rounded-lg border border-accent/30 object-cover shadow"
+                        unoptimized
                       />
                     ))}
                   </div>

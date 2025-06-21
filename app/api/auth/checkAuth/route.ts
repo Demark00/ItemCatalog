@@ -1,10 +1,10 @@
-import  { NextRequest,NextResponse } from "next/server";
+import  {NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import { connectToDB } from "@/lib/db";
 import User from "@/models/user.model";
 import { cookies } from "next/headers";
 
-export async function GET(req: NextRequest){
+export async function GET(){
     try{
         await connectToDB();
 

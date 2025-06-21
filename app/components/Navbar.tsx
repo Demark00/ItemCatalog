@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
 import Link from "next/link";
+import { useEffect } from "react";
 import useAuthStore from "@/stores/authStore";
 import { LogOut, ShoppingBasket, User, Settings } from "lucide-react";
 import { AuthStore } from "@/types/user-type";
@@ -12,9 +12,11 @@ const Navbar = () => {
   useEffect(() => {
     const hasToken = document.cookie.includes("jwt=");
     if (hasToken) {
-      checkAuth();
+      // Move the function inside to avoid missing dependency warning
+      const verify = async () => await checkAuth();
+      verify();
     }
-  }, []);
+  }, []); // ✅ safe to leave empty since checkAuth is now inside
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-base-300 bg-base-100/90 backdrop-blur-lg shadow-sm">

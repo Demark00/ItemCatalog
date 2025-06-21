@@ -2,10 +2,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { ArrowLeft, BadgeInfo, Mail, User, Image } from "lucide-react";
+import { ArrowLeft, BadgeInfo, Mail, User, Image as IconImage } from "lucide-react";
 import clsx from "clsx";
 import { useItemStore } from "@/stores/itemsStore";
 import { ItemType } from "@/types/items-type";
+import Image from "next/image";
 
 export default function ViewItemPage() {
   const params = useParams();
@@ -61,7 +62,7 @@ export default function ViewItemPage() {
       toast.success("Your enquiry has been sent!");
       setShowEnquiryForm(false);
       setEnquiryMessage("");
-    } catch (err) {
+    } catch {
       toast.error("Failed to send enquiry");
     } finally {
       setSubmitting(false);
@@ -79,7 +80,7 @@ export default function ViewItemPage() {
   if (notFound || !item) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-base-200">
-        <Image className="w-16 h-16 text-error mb-4" />
+        <IconImage className="w-16 h-16 text-error mb-4" />
         <h2 className="text-2xl font-bold text-error mb-2">Item Not Found</h2>
         <button
           className="btn btn-primary mt-4"
@@ -192,10 +193,13 @@ export default function ViewItemPage() {
           {/* Right: Images */}
           <div className="flex flex-col gap-6">
             {/* Cover Image */}
-            <img
+            <Image
               src={item.coverImage}
               alt={item.name}
+              width={600}
+              height={400}
               className="rounded-xl border-2 border-primary/20 shadow-lg w-full h-72 object-cover"
+              unoptimized
             />
 
             {/* Additional Images */}
@@ -212,10 +216,13 @@ export default function ViewItemPage() {
                         "carousel-item w-28 h-28 border border-accent/20 rounded-lg overflow-hidden"
                       )}
                     >
-                      <img
+                      <Image
                         src={img}
                         alt={`Additional ${idx + 1}`}
+                        width={112}
+                        height={112}
                         className="object-cover w-full h-full"
+                        unoptimized
                       />
                     </div>
                   ))}

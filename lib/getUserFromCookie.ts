@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { verifyToken } from "./jwt";
-import { verify } from "crypto";
 
 export async function getUserFromCookie() {
     const cookieStore = await cookies();

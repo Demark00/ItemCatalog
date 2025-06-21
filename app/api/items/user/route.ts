@@ -3,7 +3,7 @@ import { connectToDB } from "@/lib/db";
 import Item from "@/models/item.model";
 import { getUserFromCookie } from "@/lib/getUserFromCookie";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try{
         await connectToDB();
 

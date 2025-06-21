@@ -1,40 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { Tag, Info, User } from "lucide-react";
-import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { UserType } from "@/types/user-type";
+import { useItemStore } from "@/stores/itemsStore";
+import useAuthStore from "@/stores/authStore";
 import { ItemType } from "@/types/items-type";
+import Image from "next/image";
 
 export default function ItemsPage() {
-  const [items, setItems] = useState<ItemType[]>([]);
-  const [authUser, setAuthUser] = useState<UserType | null>(null);
-  const [loading, setLoading] = useState(true);
-
+  const { fetchItems, items, isLoading } = useItemStore();
+  const { authUser, checkAuth } = useAuthStore();
   const router = useRouter();
 
-  // Fetch items and user
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [itemsRes, userRes] = await Promise.all([
-          axios.get("/api/items"),
-          axios
-            .get("/api/auth/checkAuth")
-            .catch(() => ({ data: { user: null } })),
-        ]);
-        setItems(itemsRes.data.items || []);
-        setAuthUser(userRes.data.user);
-      } catch {
-        toast.error("Failed to load items.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    fetchItems();
+    checkAuth();
+  }, [fetchItems, checkAuth]);
 
   const myItems = authUser
     ? items.filter((item) => item.createdBy === authUser._id)
@@ -53,15 +35,7 @@ export default function ItemsPage() {
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <User className="w-6 h-6 text-primary" /> My Items
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {myItems.map((item) => (
-                <ItemCard
-                  key={item._id}
-                  item={item}
-                  onClick={() => router.push(`/viewItems/${item._id}`)}
-                />
-              ))}
-            </div>
+            <ItemGrid items={myItems} router={router} />
           </section>
         )}
 
@@ -70,23 +44,29 @@ export default function ItemsPage() {
           <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
             <Info className="w-6 h-6 text-accent" /> All Items
           </h2>
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center py-16">
               <span className="loading loading-spinner loading-lg text-primary"></span>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {items.map((item) => (
-                <ItemCard
-                  key={item._id}
-                  item={item}
-                  onClick={() => router.push(`/viewItems/${item._id}`)}
-                />
-              ))}
-            </div>
+            <ItemGrid items={items} router={router} />
           )}
         </section>
       </div>
+    </div>
+  );
+}
+
+function ItemGrid({ items, router }: { items: ItemType[]; router: any }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+      {items.map((item) => (
+        <ItemCard
+          key={item._id}
+          item={item}
+          onClick={() => router.push(`/viewItems/${item._id}`)}
+        />
+      ))}
     </div>
   );
 }
@@ -98,10 +78,13 @@ function ItemCard({ item, onClick }: { item: ItemType; onClick: () => void }) {
       onClick={onClick}
     >
       <figure className="relative">
-        <img
+        <Image
           src={item.coverImage}
           alt={item.name}
+          width={400}
+          height={300}
           className="w-full h-48 object-cover rounded-t-xl group-hover:scale-105 transition"
+          unoptimized
         />
         <span className="absolute top-2 left-2 badge badge-primary badge-outline text-xs">
           {item.type}
