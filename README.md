@@ -37,28 +37,27 @@ git clone https://github.com/your-username/itemcatalog.git
 cd itemcatalog
 2. Install Dependencies
 npm install
-3. Set up .env File
+
+4. Set up .env File
 Create a .env file in the root directory:
 MONGODB_URI=your_mongodb_connection_string
+
 JWT_SECRET=your_jwt_secret
+
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
 
 CLOUDINARY_CLOUD_NAME=your_cloud_name
+
 CLOUDINARY_API_KEY=your_api_key
+
 CLOUDINARY_API_SECRET=your_api_secret
 
 EMAIL_USER=your_email@gmail.com
+
 EMAIL_PASS=your_app_password
+
 TO_EMAIL=receiver_email@example.com
 
 4. Run Dev Server
 npm run dev
 App runs at: http://localhost:3000
-
-📂 Folder Structure
-app/
-  ├── api/          → Next.js API Routes
-  ├── components/   → Reusable UI Components
-  ├── stores/       → Zustand State Stores
-  ├── types/        → Type Definitions
-  └── utils/        → Utility Functions
