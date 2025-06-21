@@ -1,103 +1,215 @@
-import Image from "next/image";
+"use client";
+import { useState, ChangeEvent, FormEvent } from "react";
+import { toast } from "react-hot-toast";
+import { ImagePlus, UploadCloud, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useItemStore } from "@/stores/itemsStore";
+import { ITEM_TYPES } from "./constants/items";
+import { resizeImage } from "./utils/resizeImage";
 
-export default function Home() {
+export default function AddItemPage() {
+  const [form, setForm] = useState({
+    name: "",
+    type: "",
+    description: "",
+    coverImage: "",
+    additionalImages: [] as string[],
+  });
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [additionalPreviews, setAdditionalPreviews] = useState<string[]>([]);
+  const [success, setSuccess] = useState(false);
+
+  const { addItem, isLoading } = useItemStore();
+  const router = useRouter();
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCoverImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64 = await resizeImage(file);
+      setForm((prev) => ({ ...prev, coverImage: base64 }));
+      setCoverPreview(base64);
+    }
+  };
+
+  const handleAdditionalImages = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length) {
+      const images: string[] = [];
+      const previews: string[] = [];
+
+      Array.from(files).forEach(async (file, index) => {
+        const base64 = await resizeImage(file);
+        images.push(base64);
+        previews.push(base64);
+
+        if (images.length === files.length) {
+          setForm((prev) => ({ ...prev, additionalImages: images }));
+          setAdditionalPreviews(previews);
+        }
+      });
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.type || !form.coverImage) {
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
+    await addItem({
+      ...form,
+      _id: "",
+      createdAt: new Date().toISOString(),
+    });
+
+    setSuccess(true);
+    setTimeout(() => {
+      router.push("/viewItems");
+    }, 1800);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-white to-accent/10 flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl p-8 mt-10">
+        <h1 className="text-3xl font-extrabold text-primary mb-2 flex items-center gap-2">
+          <UploadCloud className="w-8 h-8 text-accent" /> Add New Item
+        </h1>
+        <p className="mb-8 text-base-content/70">
+          Fill in the details below to add a new item to your catalog.
+        </p>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {success ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <CheckCircle2 className="w-16 h-16 text-success mb-4 animate-bounce" />
+            <h2 className="text-2xl font-bold text-success mb-2">
+              Item successfully added!
+            </h2>
+            <p className="text-base-content/70">Redirecting to items page...</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Section */}
+            <div className="space-y-6">
+              <div>
+                <label className="label font-semibold">Item Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  className="input input-bordered w-full"
+                  placeholder="Enter item name"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label font-semibold">Item Type</label>
+                <select
+                  name="type"
+                  className="select select-bordered w-full"
+                  value={form.type}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select type</option>
+                  {ITEM_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="label font-semibold">Description</label>
+                <textarea
+                  name="description"
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Describe the item"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={6}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Right Section */}
+            <div className="space-y-6">
+              <div>
+                <label className="label font-semibold flex items-center gap-2">
+                  <ImagePlus className="w-5 h-5 text-primary" /> Cover Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="file-input file-input-bordered w-full"
+                  onChange={handleCoverImage}
+                  required
+                />
+                {coverPreview && (
+                  <div className="mt-3">
+                    <img
+                      src={coverPreview}
+                      alt="Cover Preview"
+                      className="rounded-xl border-2 border-primary/30 shadow-md w-40 h-40 object-cover mx-auto"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="label font-semibold flex items-center gap-2">
+                  <ImagePlus className="w-5 h-5 text-accent" /> Additional Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="file-input file-input-bordered w-full"
+                  onChange={handleAdditionalImages}
+                />
+                {additionalPreviews.length > 0 && (
+                  <div className="flex gap-3 mt-3 flex-wrap">
+                    {additionalPreviews.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        alt={`Preview ${idx + 1}`}
+                        className="rounded-lg border border-accent/30 w-20 h-20 object-cover shadow"
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-block text-lg font-bold shadow-lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <span className="loading loading-spinner loading-md"></span>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-5 h-5 mr-2" /> Add Item
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
