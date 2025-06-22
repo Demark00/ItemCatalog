@@ -2,19 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import Item from "@/models/item.model";
 import { connectToDB } from "@/lib/db";
 
+// interface Props{
+//   params:{
+//     id: string,
+//   }
+// }
+
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{id: string}> }
 ) {
   try {
     await connectToDB();
-
-    // Access params directly and ensure it's resolved.
-    // In some edge cases or specific Next.js versions/configurations,
-    // explicitly accessing context before destructuring might help.
-    // const resolvedContext = await Promise.resolve(context); // This is a bit of a "no-op" but can sometimes shake loose timing issues
-
-    const { id } = await context.params;
+    await params;
+    const { id } = await params;
 
     const item = await Item.findById(id).populate("createdBy", "name email");
 
