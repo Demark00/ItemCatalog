@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { ThemeStoreState } from '@/types/themeStore-type';
 
 export const useThemeStore = create<ThemeStoreState>((set) => ({
-    theme: 'coffee', // Default theme
+    theme: 'light', // Default theme
 
     // Initialize theme from localStorage on client-side
     initializeTheme: (): void => {
