@@ -45,7 +45,7 @@ const useAuthStore = create<AuthStoreType>((set) => ({
       router.push("/");
     } catch (error) {
       set({ authUser: null, isLoggingIn: false });
-      toast.error("Error logging in. Please try again.");
+      toast.error("Invalid Login Credentials");
     } finally {
       set({ isLoggingIn: false });
     }

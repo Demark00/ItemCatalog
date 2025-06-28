@@ -1,27 +1,22 @@
-"use client";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navbar from "./components/Navbar";
 import React, { useEffect } from "react";
-import { useThemeStore } from "@/stores/themeStore";
+import { Metadata } from "next";
 
-// export const metadata: Metadata = {
-//   title: "ItemCatalog",
-//   description: "Manage your product inventory and listings easily",
-// };
+export const metadata: Metadata = {
+  title: "ItemCatalog",
+  description: "Manage your product inventory and listings easily",
+};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { theme, initializeTheme } = useThemeStore();
 
-  useEffect(() => {
-    initializeTheme();
-  }, [initializeTheme]);
   return (
-    <html lang="en" data-theme={theme}>
+    <html lang="en" data-theme="light">
       <body
         className={` antialiased`}
       >

@@ -56,13 +56,6 @@ const Navbar = () => {
 
           {authUser ? (
             <>
-              <Link
-                href="/settings"
-                className="btn btn-sm btn-outline gap-2 shadow-sm hover:shadow-md transition"
-              >
-                <Settings className="size-4" />
-                <span className="hidden sm:inline">Settings</span>
-              </Link>
               <button
                 onClick={logout}
                 className="btn btn-sm btn-outline gap-2 shadow-sm hover:shadow-md transition"
@@ -73,13 +66,6 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link
-                href="/settings"
-                className="btn btn-sm btn-outline gap-2 shadow-sm hover:shadow-md transition"
-              >
-                <Settings className="size-4" />
-                <span className="hidden sm:inline">Settings</span>
-              </Link>
               <Link
                 href="/login"
                 className="btn btn-sm btn-outline gap-2 shadow-sm hover:shadow-md transition"
